@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal PAI - Absensi & Tugas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-emerald-50/50 text-slate-800 min-h-screen flex flex-col">
+
+    <header class="bg-emerald-700 text-white shadow-lg sticky top-0 z-50 border-b border-emerald-800">
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('home')">
+                <div class="bg-white text-emerald-700 p-2.5 rounded-xl shadow-inner font-bold text-xl flex items-center justify-center">
+                    <i class="fa-solid fa-kaaba"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg leading-snug">Portal PAI</h1>
+                    <p class="text-xs text-emerald-200">Pendidikan Agama Islam & Budi Pekerti</p>
+                </div>
+            </div>
+            <div class="text-xs text-emerald-100 bg-emerald-800 px-3 py-1.5 rounded-xl border border-emerald-600 font-medium">
+                <i class="fa-solid fa-cloud-arrow-up mr-1.5 text-emerald-300"></i> Google Drive Synced
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 sm:p-6 mb-12">
+        
+        <!-- Modal Dialog -->
+        <div id="customModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-95" id="modalContent">
+                <div class="text-center">
+                    <div id="modalIcon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"></div>
+                    <h3 id="modalTitle" class="font-bold text-lg mb-2 text-slate-900"></h3>
+                    <p id="modalMessage" class="text-sm text-slate-600 mb-6"></p>
+                    <button onclick="closeModal()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-xl transition shadow-md">Mengerti</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-home" class="space-y-6">
+            <div class="bg-gradient-to-r from-emerald-700 via-teal-700 to-cyan-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-4 translate-y-4">
+                    <i class="fa-solid fa-book-quran text-9xl"></i>
+                </div>
+                <div class="inline-flex items-center bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-medium border border-white/20 mb-4 text-emerald-100">
+                    <i class="fa-solid fa-mosque mr-2 text-emerald-300"></i> Mata Pelajaran PAI & Budi Pekerti
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold mb-2">Ahlan Wa Sahlan, Siswa!</h2>
+                <p class="text-emerald-100 text-sm sm:text-base max-w-xl mb-6">Silakan laksanakan absensi harian diniyah Anda dan kumpulkan tugas keislaman atau perbaikan nilai dengan penuh amanah.</p>
+                <div class="flex flex-wrap gap-2 items-center">
+                    <div class="inline-flex items-center bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-xs font-medium border border-white/20">
+                        <i class="fa-regular fa-calendar-days mr-2"></i> <span id="currentDateDisplay"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <!-- Menu 1 -->
+                <div onclick="switchView('attendance-task')" class="bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl border border-emerald-100 cursor-pointer transition transform hover:-translate-y-1 group flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-emerald-700 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-clipboard-user"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-1">Absensi & Tugas Hari Ini</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">Catat kehadiran shalat dhuha/harian, upload foto absensi, dan kirimkan tugas PAI (jenis bebas).</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-emerald-700 text-sm font-semibold group-hover:translate-x-1 transition">
+                        Mulai Absen & Tugas <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+
+                <!-- Menu 2 -->
+                <div onclick="switchView('late-task')" class="bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl border border-emerald-100 cursor-pointer transition transform hover:-translate-y-1 group flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-teal-50 text-teal-700 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:bg-teal-700 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-800 mb-1">Pengumpulan Tugas Terlambat</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">Kumpulkan tugas susulan PAI dengan memilih kelas, nama siswa, foto siswa, file bebas, serta alasannya.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-teal-700 text-sm font-semibold group-hover:translate-x-1 transition">
+                        Ajukan Tugas Terlambat <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-history mr-2 text-emerald-700"></i> Riwayat Pengiriman Terbaru</h3>
+                    <span class="text-xs text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full font-medium" id="historyCount">0 Data</span>
+                </div>
+                <div id="historyList" class="space-y-3">
+                    <p class="text-xs text-slate-400 text-center py-4">Belum ada aktivitas pengiriman tugas atau absensi.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-attendance-task" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="switchView('home')" class="inline-flex items-center text-xs font-semibold text-slate-600 hover:text-emerald-700 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Menu Utama
+                </button>
+                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Menu 1: Absensi & Tugas PAI</span>
+            </div>
+
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-emerald-100">
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Form Absensi & Tugas PAI</h2>
+                <p class="text-xs text-slate-500 mb-6">Lengkapi data diri dan unggah file tugas keislaman sesuai instruksi hari ini.</p>
+
+                <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800"><i class="fa-solid fa-bullhorn text-emerald-700 mr-1.5"></i> Tugas PAI Aktif Hari Ini (Sheet: PengaturanTugas)</span>
+                        <span id="displayTaskTypeBadge" class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md uppercase">Bebas</span>
+                    </div>
+                    <h4 id="displayTaskTitle" class="font-bold text-slate-800 text-sm mb-1">Memuat tugas aktif...</h4>
+                    <p id="displayTaskDesc" class="text-xs text-slate-600">Silakan tunggu sebentar...</p>
+                </div>
+
+                <form id="formAttendanceTask" onsubmit="handleAttendanceSubmit(event)" class="space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih Kelas</label>
+                            <select id="atClass" onchange="onClassChange('at')" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                                <option value="">-- Pilih Kelas --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih Nama Siswa</label>
+                            <select id="atStudent" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                                <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Status Kehadiran / Kegiatan Ibadah</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <label class="border border-slate-200 rounded-xl p-3 flex items-center justify-center space-x-2 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="attendanceStatus" value="Hadir" checked class="text-emerald-700 focus:ring-emerald-500">
+                                <span class="text-xs font-medium text-slate-700">Hadir</span>
+                            </label>
+                            <label class="border border-slate-200 rounded-xl p-3 flex items-center justify-center space-x-2 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="attendanceStatus" value="Izin" class="text-emerald-700 focus:ring-emerald-500">
+                                <span class="text-xs font-medium text-slate-700">Izin</span>
+                            </label>
+                            <label class="border border-slate-200 rounded-xl p-3 flex items-center justify-center space-x-2 cursor-pointer hover:bg-slate-50 transition">
+                                <input type="radio" name="attendanceStatus" value="Sakit" class="text-emerald-700 focus:ring-emerald-500">
+                                <span class="text-xs font-medium text-slate-700">Sakit</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Upload Foto Absensi</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center hover:bg-slate-50 transition relative">
+                            <input type="file" id="atPhoto" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                            <div class="space-y-1">
+                                <i class="fa-solid fa-camera text-2xl text-slate-400"></i>
+                                <p class="text-xs text-slate-600 font-medium">Klik atau seret foto absensi di sini</p>
+                                <p id="atPhotoName" class="text-[10px] text-slate-400">Format: JPG, PNG (Maks 5MB)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label id="atTaskLabel" class="block text-xs font-semibold text-slate-700 mb-1.5">Upload File Tugas PAI (Jenis: Bebas)</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center hover:bg-slate-50 transition relative">
+                            <input type="file" id="atTaskFile" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                            <div class="space-y-1">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-emerald-600"></i>
+                                <p class="text-xs text-slate-600 font-medium">Pilih file tugas PAI (jenis bebas)</p>
+                                <p id="atTaskFileName" class="text-[10px] text-slate-400">Belum ada file dipilih</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="atSubmitBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-3 rounded-xl transition shadow-md flex items-center justify-center">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Absensi & Tugas PAI
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="view-late-task" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="switchView('home')" class="inline-flex items-center text-xs font-semibold text-slate-600 hover:text-emerald-700 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Menu Utama
+                </button>
+                <span class="text-xs font-semibold text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-100">Menu 2: Tugas Terlambat PAI</span>
+            </div>
+
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-emerald-100">
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Form Pengumpulan Tugas Terlambat PAI</h2>
+                <p class="text-xs text-slate-500 mb-6">Pilih kelas, nama siswa, tanggal tugas PAI yang mau diperbaiki, foto siswa, file bebas, beserta alasannya.</p>
+
+                <form id="formLateTask" onsubmit="handleLateSubmit(event)" class="space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih Kelas</label>
+                            <select id="ltClass" onchange="onClassChange('lt')" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition">
+                                <option value="">-- Pilih Kelas --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih Nama Siswa</label>
+                            <select id="ltStudent" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition">
+                                <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tanggal Tugas PAI yang Mau Diperbaiki</label>
+                        <input type="date" id="ltDate" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Alasan Keterlambatan / Perbaikan</label>
+                        <textarea id="ltReason" rows="3" placeholder="Tuliskan alasan mengapa tugas PAI terlambat dikumpulkan..." required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Upload Foto Siswa</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center hover:bg-slate-50 transition relative">
+                            <input type="file" id="ltPhoto" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                            <div class="space-y-1">
+                                <i class="fa-solid fa-camera text-2xl text-teal-600"></i>
+                                <p class="text-xs text-slate-600 font-medium">Klik atau seret foto siswa di sini</p>
+                                <p id="ltPhotoName" class="text-[10px] text-slate-400">Format: JPG, PNG (Maks 5MB)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Upload File Tugas Perbaikan PAI (Jenis File Bebas)</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center hover:bg-slate-50 transition relative">
+                            <input type="file" id="ltFile" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                            <div class="space-y-1">
+                                <i class="fa-solid fa-file-arrow-up text-2xl text-teal-600"></i>
+                                <p class="text-xs text-slate-600 font-medium">Klik untuk memilih file perbaikan tugas PAI (Bebas)</p>
+                                <p id="ltFileName" class="text-[10px] text-slate-400">Belum ada file dipilih</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="ltSubmitBtn" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-3 rounded-xl transition shadow-md flex items-center justify-center">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Pengajuan Tugas Terlambat PAI
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-emerald-100 py-4 text-center text-xs text-slate-400 mt-auto">
+        &copy; 2026 Portal Pendidikan Agama Islam (PAI). Hak Cipta Dilindungi.
+    </footer>
+
+    <script>
+        const initialStudentData = [
+            {nama: "Adeliya Reza", kelas: "E1"}, {nama: "Agus Ramadhani", kelas: "E1"}, {nama: "Alby Al Khalifi Nasution", kelas: "E1"}, {nama: "Annisa Rahmatullah Pelsa", kelas: "E1"}, {nama: "Delia Hartika Putri", kelas: "E1"}, {nama: "Dito Satria", kelas: "E1"}, {nama: "Garlic Amrita", kelas: "E1"}, {nama: "Husnadatul Jannah", kelas: "E1"}, {nama: "Iqbal Yusup Ramadhan", kelas: "E1"}, {nama: "Juleha Mirna Idayu", kelas: "E1"}, {nama: "Julia Azzahra", kelas: "E1"}, {nama: "Kayla Azzura Putri", kelas: "E1"}, {nama: "Kiano Satria Ramadhan", kelas: "E1"}, {nama: "Lastri Alfikasari", kelas: "E1"}, {nama: "Lydia Deana Saputri", kelas: "E1"}, {nama: "Masyitha Choirunnisa", kelas: "E1"}, {nama: "Muhamad Khidam", kelas: "E1"}, {nama: "Muhammad Andra", kelas: "E1"}, {nama: "Muhammad Rafid Hanafi", kelas: "E1"}, {nama: "Naura Berlin Suciati", kelas: "E1"}, {nama: "Niken Dwi Amalia", kelas: "E1"}, {nama: "Nur Rasifa Hunairah", kelas: "E1"}, {nama: "Nur Syafa Kholizah", kelas: "E1"}, {nama: "Nuradilla Putri Novriyan", kelas: "E1"}, {nama: "Raisha Adella Kinanti Hasibuan", kelas: "E1"}, {nama: "Reza Rahmat Dian", kelas: "E1"}, {nama: "Rizky Octavian", kelas: "E1"}, {nama: "Saskia Dwi Lestari", kelas: "E1"}, {nama: "Senja Tela Pratama", kelas: "E1"}, {nama: "Syafiya Asiyah Arianti", kelas: "E1"}, {nama: "Tiara Aulia Pitri", kelas: "E1"}, {nama: "Tiara Dewi Pratiwi", kelas: "E1"}, {nama: "Ulia Citra Permatasari", kelas: "E1"}, {nama: "Yudha Permana", kelas: "E1"},
+            {nama: "Aidil Fitria", kelas: "E2"}, {nama: "Alilah Zahrani", kelas: "E2"}, {nama: "Amelia Sabrina", kelas: "E2"}, {nama: "Anatasa", kelas: "E2"}, {nama: "Andien Nazhifah Putri", kelas: "E2"}, {nama: "Andika Alfaredo", kelas: "E2"}, {nama: "Asyifa Salsabila", kelas: "E2"}, {nama: "Atira Salwa", kelas: "E2"}, {nama: "Aurelia Rihana Puteri", kelas: "E2"}, {nama: "Azka Al Faarisy Nasution", kelas: "E2"}, {nama: "Chika Nurhalimah", kelas: "E2"}, {nama: "Daffa Delpiero Dzakwan", kelas: "E2"}, {nama: "Davina Aisyahrani", kelas: "E2"}, {nama: "Delio Sabian Prayata", kelas: "E2"}, {nama: "Dhina Nurdiyana S", kelas: "E2"}, {nama: "Eliza Oktaviana", kelas: "E2"}, {nama: "Galuh Khanaya Putri", kelas: "E2"}, {nama: "Gilang Ramadhan", kelas: "E2"}, {nama: "Hafizah Nur Medina", kelas: "E2"}, {nama: "M. Fahrezi Julhaikal", kelas: "E2"}, {nama: "Muhamad Adi Nugroho", kelas: "E2"}, {nama: "Muhammad Fathir Ramadhan", kelas: "E2"}, {nama: "Muhammad Gustiawan", kelas: "E2"}, {nama: "Muhammad Rizki Adha Setiawan", kelas: "E2"}, {nama: "Muhammad Taufik Hidayat", kelas: "E2"}, {nama: "Muhammad Zaki Ramdani", kelas: "E2"}, {nama: "Nadila Anggraini", kelas: "E2"}, {nama: "Nadin Julingga Lubis", kelas: "E2"}, {nama: "Naurah Ardelia", kelas: "E2"}, {nama: "Nur Fadillah Sari", kelas: "E2"}, {nama: "Septian Ariadi", kelas: "E2"}, {nama: "Shafa Shaqynah Putri", kelas: "E2"}, {nama: "Tasya Faiqah", kelas: "E2"}, {nama: "Wafiq Nur'Azizah", kelas: "E2"},
+            {nama: "Aditia Nurcahyo", kelas: "E3"}, {nama: "Aliya Anggraini", kelas: "E3"}, {nama: "Andini Sri Sundari", kelas: "E3"}, {nama: "Andrean", kelas: "E3"}, {nama: "Arju Rahmataka", kelas: "E3"}, {nama: "Auryn Sima Zahira", kelas: "E3"}, {nama: "Chantika Putri Maharani", kelas: "E3"}, {nama: "Claudya Di Maulida", kelas: "E3"}, {nama: "Dezta Dharmawan", kelas: "E3"}, {nama: "Dimas Ikhsanul Azri", kelas: "E3"}, {nama: "Dino Ferdinan", kelas: "E3"}, {nama: "Dita Usyairoh Pohan", kelas: "E3"}, {nama: "Fadilla Juliana Putri", kelas: "E3"}, {nama: "Fatmawaty", kelas: "E3"}, {nama: "Ferin Abelia", kelas: "E3"}, {nama: "Firgiawan Nasuha", kelas: "E3"}, {nama: "Gibran Alkhairi", kelas: "E3"}, {nama: "Kaila Pratama", kelas: "E3"}, {nama: "Laura Indriani", kelas: "E3"}, {nama: "M. Ramadhan Fitrah", kelas: "E3"}, {nama: "Muhamad Zidan", kelas: "E3"}, {nama: "Muhammad Afriyanto", kelas: "E3"}, {nama: "Nayla Salsabila", kelas: "E3"}, {nama: "Nazwa Zahratusyita", kelas: "E3"}, {nama: "Raffa Al Fajri", kelas: "E3"}, {nama: "Raka Al Fahrezi", kelas: "E3"}, {nama: "Sarifah Salum Safitri", kelas: "E3"}, {nama: "Silvia Kartika", kelas: "E3"}, {nama: "Siti Rohidah", kelas: "E3"}, {nama: "Zahra Goemay", kelas: "E3"}, {nama: "Zaskia Apriani Putri", kelas: "E3"}, {nama: "Zaskiah Ayu Humairoh", kelas: "E3"}, {nama: "Zhyvana Wieluphika", kelas: "E3"},
+            {nama: "Adinda Unaisah", kelas: "E4"}, {nama: "Akifa Naila", kelas: "E4"}, {nama: "Alfian Di Caprio", kelas: "E4"}, {nama: "Alya Maolidi Putri", kelas: "E4"}, {nama: "Alya Rahmadhani", kelas: "E4"}, {nama: "Aminatuz Zulfa", kelas: "E4"}, {nama: "Anggi Meylia Santika.D", kelas: "E4"}, {nama: "Aziza Qusnul Khotimah", kelas: "E4"}, {nama: "Bian Nugroho Putra", kelas: "E4"}, {nama: "Chatrina Viola Junianty", kelas: "E4"}, {nama: "Chiva Nadia", kelas: "E4"}, {nama: "Christian Kovalen.S", kelas: "E4"}, {nama: "Danu Prasetya Putra", kelas: "E4"}, {nama: "Faiza Azra Dinata", kelas: "E4"}, {nama: "Firdho Desvio", kelas: "E4"}, {nama: "Firli Talita Putri", kelas: "E4"}, {nama: "Julyet Lentera Putri", kelas: "E4"}, {nama: "M. Aprinaldi", kelas: "E4"}, {nama: "M. Rafki", kelas: "E4"}, {nama: "Meyla Handita", kelas: "E4"}, {nama: "Muhamad Umaroh Alhaqi", kelas: "E4"}, {nama: "Muhammad Akmal Rizki", kelas: "E4"}, {nama: "Muhammad Fakhriy Ramadhan", kelas: "E4"}, {nama: "Naila Ananda Putri", kelas: "E4"}, {nama: "Natasya Atika Fadila", kelas: "E4"}, {nama: "Nazwa Alya Zahra", kelas: "E4"}, {nama: "Qoyyum", kelas: "E4"}, {nama: "R.M. Fathir Ahnaf", kelas: "E4"}, {nama: "Raja Twofeb Davarel", kelas: "E4"}, {nama: "Refiliano Brikman Aji", kelas: "E4"}, {nama: "Renata Magdalena Putri Br Ketaren", kelas: "E4"}, {nama: "Risa Durrah Khansaa", kelas: "E4"}, {nama: "Syarifah Layanah Zhafirah", kelas: "E4"}, {nama: "Winda Apri Yanti", kelas: "E4"}, {nama: "Zahra", kelas: "E4"}, {nama: "Zivara De Rahma", kelas: "E4"},
+            {nama: "Ahmad Raziq Ahlami", kelas: "E5"}, {nama: "Alivia Humayroh", kelas: "E5"}, {nama: "Alya Meisyah Putri", kelas: "E5"}, {nama: "Anisah Salwa Hamidah", kelas: "E5"}, {nama: "Anjuly Pratama", kelas: "E5"}, {nama: "Ayrin Nasya Gustina", kelas: "E5"}, {nama: "Azizi Widya Astuti", kelas: "E5"}, {nama: "Azra Zahira", kelas: "E5"}, {nama: "Azza Thoriro Wahidarara Lubis", kelas: "E5"}, {nama: "Bagas Putra Ramadan", kelas: "E5"}, {nama: "Chiko Azam Mascanjani", kelas: "E5"}, {nama: "Dea Livya Sefalya", kelas: "E5"}, {nama: "Dhity Wardani", kelas: "E5"}, {nama: "Dicky Fahreza Sirait", kelas: "E5"}, {nama: "Eki Kurnia Utomo", kelas: "E5"}, {nama: "Keanu Arka Anugrah", kelas: "E5"}, {nama: "Lidya Dwi Aryani", kelas: "E5"}, {nama: "M. Azam Atthoriq", kelas: "E5"}, {nama: "M.Ishaaq Basir", kelas: "E5"}, {nama: "Monika Sanjaya", kelas: "E5"}, {nama: "Muhamad Reno Alfitra", kelas: "E5"}, {nama: "Muhammad Fazli Al-Ghazam", kelas: "E5"}, {nama: "Naisa Winata", kelas: "E5"}, {nama: "Nazwa Dewi Ramadhani", kelas: "E5"}, {nama: "Nurul Arianka", kelas: "E5"}, {nama: "Okta Yoga Praptama", kelas: "E5"}, {nama: "Qeyla Azzahra", kelas: "E5"}, {nama: "Refan Gio Saputra", kelas: "E5"}, {nama: "Revida Nurul Aulia", kelas: "E5"}, {nama: "Suci Anggraini Rohman", kelas: "E5"}, {nama: "Suzza Awalia", kelas: "E5"}, {nama: "Syilvia Al Syafana", kelas: "E5"}, {nama: "Zahra Nabila Saki", kelas: "E5"}, {nama: "Zaskia Ufayra", kelas: "E5"},
+            {nama: "Aleesya Liyana Zahirah", kelas: "E6"}, {nama: "Alfi Apriliani", kelas: "E6"}, {nama: "Annisa Ramadhani", kelas: "E6"}, {nama: "Arini Usman", kelas: "E6"}, {nama: "Aydah Ayu Husadah", kelas: "E6"}, {nama: "Chila Zahira", kelas: "E6"}, {nama: "Delsa Viola", kelas: "E6"}, {nama: "Dewi Novriani Siregar", kelas: "E6"}, {nama: "Dinda Ramadiyanti", kelas: "E6"}, {nama: "Febbryani Laila Valent", kelas: "E6"}, {nama: "Fitri Nazuwa", kelas: "E6"}, {nama: "Jenia Sifa Alhusna", kelas: "E6"}, {nama: "Jenny Herlina", kelas: "E6"}, {nama: "M. Ashabul Khafi", kelas: "E6"}, {nama: "M. Azhar Adhi Nugroho", kelas: "E6"}, {nama: "M. Faizi", kelas: "E6"}, {nama: "M.Damar Gumilang Adyaputra", kelas: "E6"}, {nama: "Manisa Koirala", kelas: "E6"}, {nama: "Muhammad Azzam Asgaf", kelas: "E6"}, {nama: "Muhammad Isra Dwi Anugrah", kelas: "E6"}, {nama: "Muhammad Ridho", kelas: "E6"}, {nama: "Naufal Nasrullah", kelas: "E6"}, {nama: "Nur Ashifah Aulia", kelas: "E6"}, {nama: "Putra Pratama Assasad", kelas: "E6"}, {nama: "Putri Sahira", kelas: "E6"}, {nama: "Rafif Fairuz Dzaky", kelas: "E6"}, {nama: "Rifky Anugerah", kelas: "E6"}, {nama: "Selvi Kirani", kelas: "E6"}, {nama: "Selvia Murfatimah Bisyir", kelas: "E6"}, {nama: "Susan Melani Bakhtiar", kelas: "E6"}, {nama: "Talita Lutvia Zahra", kelas: "E6"}, {nama: "Viona Bramelia", kelas: "E6"}, {nama: "Wahyu Pratama", kelas: "E6"}, {nama: "Zahwa Marlissya Melda Putri", kelas: "E6"},
+            {nama: "Al Ravi Sabri Putra Perdana", kelas: "E7"}, {nama: "Alridho", kelas: "E7"}, {nama: "Aqila Marwa", kelas: "E7"}, {nama: "Arif Alamsyah Yahya", kelas: "E7"}, {nama: "Erlangga Apriansyah", kelas: "E7"}, {nama: "Ezra Pramadya Adji", kelas: "E7"}, {nama: "Ghinayatun Nisa Maruddani", kelas: "E7"}, {nama: "Habibie Julian Syah", kelas: "E7"}, {nama: "Jehan Atia Sabrina", kelas: "E7"}, {nama: "Lusiana Dwi Permata", kelas: "E7"}, {nama: "M. Al Rasyid", kelas: "E7"}, {nama: "Malika Odelia Effendi", kelas: "E7"}, {nama: "Michiko Putri Aulya", kelas: "E7"}, {nama: "Muhamad Rizki Saputra", kelas: "E7"}, {nama: "Muhammad Alfian Pradana", kelas: "E7"}, {nama: "Muhammad Furqon", kelas: "E7"}, {nama: "Najwa Az-Zahra", kelas: "E7"}, {nama: "Naqiyya Zivana", kelas: "E7"}, {nama: "Nisrina Widodo", kelas: "E7"}, {nama: "Nursinta Hidayati", kelas: "E7"}, {nama: "Pratama Desfrianto", kelas: "E7"}, {nama: "Putri Amelia Oktaviani", kelas: "E7"}, {nama: "Putri Ningsih", kelas: "E7"}, {nama: "Raditya Pratama", kelas: "E7"}, {nama: "Rafa Aditia Pratama", kelas: "E7"}, {nama: "Reva Khairunnisak", kelas: "E7"}, {nama: "Reyla Adelia", kelas: "E7"}, {nama: "Satrista Aliza", kelas: "E7"}, {nama: "Shaqilla Azalea Chandra", kelas: "E7"}, {nama: "Tantri Abriani", kelas: "E7"}, {nama: "Zahwa Yuanita", kelas: "E7"}, {nama: "Violla Syah Putri", kelas: "E7"},
+            {nama: "AHMAD FADIL BARAQBAH", kelas: "XI F1"}, {nama: "ALYA SALSABILA", kelas: "XI F1"}, {nama: "AULIA RAMADHANI", kelas: "XI F1"}, {nama: "BAGAS NUR ROHMAN", kelas: "XI F1"}, {nama: "CHILA SEPTIANA", kelas: "XI F1"}, {nama: "DAVIEN ORLANDO", kelas: "XI F1"}, {nama: "DELVIN RAHMANA PUTRA", kelas: "XI F1"}, {nama: "DHIYA AYU NINGTYAS", kelas: "XI F1"}, {nama: "FADHIL PRATAMA", kelas: "XI F1"}, {nama: "FIORENTINA", kelas: "XI F1"}, {nama: "GALANG RAMDHITYA ALFATIR", kelas: "XI F1"}, {nama: "JOHANES SITUMORANG", kelas: "XI F1"}, {nama: "KAILA EKA PUTRI", kelas: "XI F1"}, {nama: "M. RASYA ALDIANSYAH BAHRI", kelas: "XI F1"}, {nama: "MUHAMMAD AIDIL NUL HAKIM", kelas: "XI F1"}, {nama: "MUHAMMAD DELVIENO ARDYATAMA", kelas: "XI F1"}, {nama: "MUHAMMAD SUBHAN PRATAMA", kelas: "XI F1"}, {nama: "NABILA FEBRIANA SAPUTRI", kelas: "XI F1"}, {nama: "NABILA FITRIA ZAHRA", kelas: "XI F1"}, {nama: "NADIN APRILIA", kelas: "XI F1"}, {nama: "RAHMAT RISQI HIDAYAT", kelas: "XI F1"}, {nama: "RISTY AULIA PUTRI", kelas: "XI F1"}, {nama: "SALWA AULIYA PUTRI", kelas: "XI F1"}, {nama: "SAMUEL REINHART PARTOGUAN.LBS", kelas: "XI F1"}, {nama: "SITI MAEMUNNAH", kelas: "XI F1"}, {nama: "WANDA RAMADHAN", kelas: "XI F1"}, {nama: "ZAHIRA AULIA", kelas: "XI F1"}, {nama: "Gilang anugrah", kelas: "XI F1"},
+            {nama: "APRIANTI", kelas: "XI F2"}, {nama: "BAGJA KHOIRUL FAREL", kelas: "XI F2"}, {nama: "BIMA DWI FIRJATULLAH", kelas: "XI F2"}, {nama: "CINTA PERMATA MINDY", kelas: "XI F2"}, {nama: "DAFFA ALFAREZY", kelas: "XI F2"}, {nama: "DIFA AURELIA", kelas: "XI F2"}, {nama: "DIMAS PUTRA RAMADHAN", kelas: "XI F2"}, {nama: "EDWIN RESTA PRATAMA", kelas: "XI F2"}, {nama: "FAREL FAJRI RAMADHAN", kelas: "XI F2"}, {nama: "FEBIANTY ELFA ZAHRA", kelas: "XI F2"}, {nama: "FITRI NUR AISYAH", kelas: "XI F2"}, {nama: "IQBAL ALDIAN PRATAMA", kelas: "XI F2"}, {nama: "JUNITAN ARIANA", kelas: "XI F2"}, {nama: "KARENINA FATIMAH AZ-ZAHRA S", kelas: "XI F2"}, {nama: "KHADAFI RIZKY PRATAMA", kelas: "XI F2"}, {nama: "M. ALIF NUGRAHA", kelas: "XI F2"}, {nama: "M. YUSUF SYUKRI", kelas: "XI F2"}, {nama: "M.FADHIL PRATAMA", kelas: "XI F2"}, {nama: "M.FADLI MANGGALA SURI", kelas: "XI F2"}, {nama: "MARCELLO. S", kelas: "XI F2"}, {nama: "MUHAMMAD ADITYA SYAHPUTRA", kelas: "XI F2"}, {nama: "MUHAMMAD ATTARIQ ALFATH ALALA", kelas: "XI F2"}, {nama: "NOLY CRISTIANI SINAGA", kelas: "XI F2"}, {nama: "NUR AINI AWALIYAH", kelas: "XI F2"}, {nama: "PELANGI CAKRAWALA", kelas: "XI F2"}, {nama: "PRADITIA AL MUAS", kelas: "XI F2"}, {nama: "PUTRA ADITYA", kelas: "XI F2"}, {nama: "RANDY ADITYA SYAHPUTRA", kelas: "XI F2"}, {nama: "RIZKY WIRATAMA", kelas: "XI F2"}, {nama: "SALSABILA NASYAYA", kelas: "XI F2"}, {nama: "UMUL KHORI ADHA", kelas: "XI F2"}, {nama: "VIFHY KEYLILLA", kelas: "XI F2"}, {nama: "ZAINAL MUSTHAQIM", kelas: "XI F2"},
+            {nama: "ADINDA SURYA YULIANTO", kelas: "XI F4"}, {nama: "AIRA RAMADANI", kelas: "XI F4"}, {nama: "AISYAH PUTRI", kelas: "XI F4"}, {nama: "ANNISAH DEBBITHA DWI YANI", kelas: "XI F4"}, {nama: "BENING PUTRI ALAM", kelas: "XI F4"}, {nama: "CANIA NUR RAMADHANI", kelas: "XI F4"}, {nama: "DEALOVA ARUMBI", kelas: "XI F4"}, {nama: "ELLA MEILANI PUTRI", kelas: "XI F4"}, {nama: "ILHAM SAFUTRA", kelas: "XI F4"}, {nama: "JESYCA OLIVIA PUTRI", kelas: "XI F4"}, {nama: "KHOVIFA WILNA", kelas: "XI F4"}, {nama: "MARTIN ANGGRAINI", kelas: "XI F4"}, {nama: "MIA SABITAH", kelas: "XI F4"}, {nama: "MUHAMMAD PUTRA RAMADHANI", kelas: "XI F4"}, {nama: "MUNZILA RAHMA", kelas: "XI F4"}, {nama: "NABILA ISTAFANA", kelas: "XI F4"}, {nama: "NIKEISHA FREDELLA AUFA", kelas: "XI F4"}, {nama: "PRISHILLA HANA KUSUMA", kelas: "XI F4"}, {nama: "QORINA ALTHAFUNISA", kelas: "XI F4"}, {nama: "QUEENSHA ISTASILA", kelas: "XI F4"}, {nama: "RAMA ARFAHRIZKI", kelas: "XI F4"}, {nama: "RINDI ANDALUCI", kelas: "XI F4"}, {nama: "RIZKI PADILAH", kelas: "XI F4"}, {nama: "SAFIRA RAHMADANI", kelas: "XI F4"}, {nama: "SHAKIRA", kelas: "XI F4"}, {nama: "SHAKIRA ANGGIETA LARASATI", kelas: "XI F4"}, {nama: "SITI SANIYYAH SYAHRA", kelas: "XI F4"}, {nama: "SUCHI ALFADILAH PUTRI", kelas: "XI F4"}, {nama: "SUCI RAMADHANI", kelas: "XI F4"}, {nama: "TINAH MUTC MA'INNAH", kelas: "XI F4"}, {nama: "VONY INDAH PRATIWI", kelas: "XI F4"}
+        ];
+
+        let appConfig = JSON.parse(localStorage.getItem('portal_pai_admin_config') || 'null') || {
+            title: "Hafalan Surat Pendek & Tajwid",
+            desc: "Setor hafalan surat pilihan dan praktikkan hukum tajwid dengan benar.",
+            type: "Bebas"
+        };
+
+        let submissions = JSON.parse(localStorage.getItem('student_submissions_pai') || '[]');
+        let googleSheetsUrl = localStorage.getItem('google_sheets_url_pai') || 'https://script.google.com/macros/s/AKfycbzpLlu2v2eQ8D4-3G-qfMibT30hlHW4LJIGw2U2nyuT4Dwv3CIPegmVhncoyMomeEux/exec';
+        
+        let studentDatabase = JSON.parse(localStorage.getItem('student_master_pai') || 'null');
+        if (!studentDatabase || Object.keys(studentDatabase).length === 0) {
+            studentDatabase = buildStudentMapFromList(initialStudentData);
+            localStorage.setItem('student_master_pai', JSON.stringify(studentDatabase));
+        }
+
+        function buildStudentMapFromList(list) {
+            let map = {};
+            list.forEach(item => {
+                const cls = String(item.kelas).trim();
+                const name = String(item.nama).trim();
+                if (cls && name) {
+                    if (!map[cls]) map[cls] = [];
+                    if (!map[cls].includes(name)) map[cls].push(name);
+                }
+            });
+            return map;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateDateDisplay();
+            renderHistory();
+            syncAdminUI();
+            setupFileInputListeners();
+            populateClassDropdowns();
+            
+            if (googleSheetsUrl) {
+                fetchDataFromSheetsSilent();
+            }
+        });
+
+        function populateClassDropdowns() {
+            const atClassSelect = document.getElementById('atClass');
+            const ltClassSelect = document.getElementById('ltClass');
+            
+            const classes = Object.keys(studentDatabase).sort((a, b) => {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            });
+            
+            let optionsHtml = '<option value="">-- Pilih Kelas --</option>';
+            classes.forEach(cls => {
+                optionsHtml += `<option value="${cls}">${cls}</option>`;
+            });
+            
+            if (atClassSelect) {
+                const currentVal = atClassSelect.value;
+                atClassSelect.innerHTML = optionsHtml;
+                if (currentVal) atClassSelect.value = currentVal;
+            }
+            if (ltClassSelect) {
+                const currentVal = ltClassSelect.value;
+                ltClassSelect.innerHTML = optionsHtml;
+                if (currentVal) ltClassSelect.value = currentVal;
+            }
+        }
+
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('id-ID', options);
+            document.getElementById('currentDateDisplay').textContent = today;
+        }
+
+        function switchView(viewName) {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-attendance-task').classList.add('hidden');
+            document.getElementById('view-late-task').classList.add('hidden');
+
+            if (viewName === 'home') {
+                document.getElementById('view-home').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (viewName === 'attendance-task') {
+                document.getElementById('view-attendance-task').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (viewName === 'late-task') {
+                document.getElementById('view-late-task').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function onClassChange(prefix) {
+            const classSelect = document.getElementById(prefix + 'Class');
+            const studentSelect = document.getElementById(prefix + 'Student');
+            const selectedClass = classSelect ? classSelect.value : '';
+
+            if (studentSelect) {
+                studentSelect.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>';
+
+                if (selectedClass && studentDatabase[selectedClass] && studentDatabase[selectedClass].length > 0) {
+                    studentDatabase[selectedClass].forEach(name => {
+                        const opt = document.createElement('option');
+                        opt.value = name;
+                        opt.textContent = name;
+                        studentSelect.appendChild(opt);
+                    });
+                } else {
+                    studentSelect.innerHTML = '<option value="">-- Tidak ada siswa di kelas ini --</option>';
+                }
+            }
+        }
+
+        function syncAdminUI() {
+            document.getElementById('displayTaskTitle').textContent = appConfig.title;
+            document.getElementById('displayTaskDesc').textContent = appConfig.desc;
+            document.getElementById('displayTaskTypeBadge').textContent = "Bebas";
+            document.getElementById('atTaskLabel').textContent = `Upload File Tugas PAI (Jenis: Bebas)`;
+        }
+
+        function setupFileInputListeners() {
+            const atPhoto = document.getElementById('atPhoto');
+            if (atPhoto) {
+                atPhoto.addEventListener('change', (e) => {
+                    if(e.target.files.length > 0) {
+                        document.getElementById('atPhotoName').textContent = "File dipilih: " + e.target.files[0].name;
+                        document.getElementById('atPhotoName').className = "text-[10px] text-emerald-600 font-semibold";
+                    }
+                });
+            }
+            const atTaskFile = document.getElementById('atTaskFile');
+            if (atTaskFile) {
+                atTaskFile.addEventListener('change', (e) => {
+                    if(e.target.files.length > 0) {
+                        document.getElementById('atTaskFileName').textContent = "File dipilih: " + e.target.files[0].name;
+                        document.getElementById('atTaskFileName').className = "text-[10px] text-emerald-600 font-semibold";
+                    }
+                });
+            }
+            const ltPhoto = document.getElementById('ltPhoto');
+            if (ltPhoto) {
+                ltPhoto.addEventListener('change', (e) => {
+                    if(e.target.files.length > 0) {
+                        document.getElementById('ltPhotoName').textContent = "File dipilih: " + e.target.files[0].name;
+                        document.getElementById('ltPhotoName').className = "text-[10px] text-teal-600 font-semibold";
+                    }
+                });
+            }
+            const ltFile = document.getElementById('ltFile');
+            if (ltFile) {
+                ltFile.addEventListener('change', (e) => {
+                    if(e.target.files.length > 0) {
+                        document.getElementById('ltFileName').textContent = "File dipilih: " + e.target.files[0].name;
+                        document.getElementById('ltFileName').className = "text-[10px] text-teal-600 font-semibold";
+                    }
+                });
+            }
+        }
+
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) {
+                    resolve(null);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function sendToGoogleSheets(record) {
+            if (!googleSheetsUrl) return;
+            try {
+                await fetch(googleSheetsUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(record)
+                });
+                console.log("Data berhasil dikirim ke Google Sheets & Drive.");
+            } catch (err) {
+                console.error("Gagal mengirim ke Google Sheets:", err);
+            }
+        }
+
+        async function fetchDataFromSheetsSilent() {
+            if (!googleSheetsUrl) return;
+            try {
+                const res = await fetch(googleSheetsUrl);
+                const data = await res.json();
+                if (data && typeof data === 'object' && !data.error) {
+                    if (data.students && Object.keys(data.students).length > 0) {
+                        studentDatabase = data.students;
+                        localStorage.setItem('student_master_pai', JSON.stringify(studentDatabase));
+                        populateClassDropdowns();
+                    }
+                    if (data.taskConfig) {
+                        appConfig = {
+                            title: data.taskConfig.title || appConfig.title,
+                            desc: data.taskConfig.desc || appConfig.desc,
+                            type: "Bebas"
+                        };
+                        localStorage.setItem('portal_pai_admin_config', JSON.stringify(appConfig));
+                        syncAdminUI();
+                    }
+                }
+            } catch (e) {
+                console.log("Background sync error:", e);
+            }
+        }
+
+        async function handleAttendanceSubmit(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('atSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim file ke Google Drive & Sheets...';
+
+            const className = document.getElementById('atClass').value;
+            const studentName = document.getElementById('atStudent').value;
+            const status = document.querySelector('input[name="attendanceStatus"]:checked').value;
+            
+            const photoFile = document.getElementById('atPhoto').files[0];
+            const taskFile = document.getElementById('atTaskFile').files[0];
+
+            const photoBase64 = await convertFileToBase64(photoFile);
+            const taskBase64 = await convertFileToBase64(taskFile);
+
+            const record = {
+                id: Date.now(),
+                type: 'Absensi & Tugas PAI',
+                className,
+                studentName,
+                details: `Status: ${status} | Kegiatan: ${appConfig.title}`,
+                timestamp: new Date().toLocaleString('id-ID'),
+                fileName: photoFile ? photoFile.name : '',
+                fileData: photoBase64,
+                taskFileName: taskFile ? taskFile.name : '',
+                taskFileData: taskBase64
+            };
+
+            submissions.unshift({
+                id: record.id,
+                type: record.type,
+                className: record.className,
+                studentName: record.studentName,
+                details: record.details + ` | Foto: ${record.fileName} | Tugas: ${record.taskFileName}`,
+                timestamp: record.timestamp
+            });
+
+            localStorage.setItem('student_submissions_pai', JSON.stringify(submissions));
+            await sendToGoogleSheets(record);
+            
+            renderHistory();
+            document.getElementById('formAttendanceTask').reset();
+            document.getElementById('atStudent').innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
+            document.getElementById('atPhotoName').textContent = "Format: JPG, PNG (Maks 5MB)";
+            document.getElementById('atTaskFileName').textContent = "Belum ada file dipilih";
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Absensi & Tugas PAI';
+            
+            showModal('Barokallah!', 'Absensi, foto, dan tugas PAI berhasil dikirim ke Google Drive & Data Guru.', 'success');
+            switchView('home');
+        }
+
+        async function handleLateSubmit(e) {
+            e.preventDefault();
+            
+            const photoFile = document.getElementById('ltPhoto').files[0];
+            const lateFile = document.getElementById('ltFile').files[0];
+
+            const atPhotoFile = document.getElementById('atPhoto').files[0];
+            if (atPhotoFile && photoFile && atPhotoFile.name === photoFile.name && atPhotoFile.size === photoFile.size) {
+                showModal('Peringatan Foto', 'Foto siswa tidak boleh sama dengan foto absensi sebelumnya! Harap pilih foto yang berbeda.', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('ltSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim file ke Google Drive & Sheets...';
+
+            const className = document.getElementById('ltClass').value;
+            const studentName = document.getElementById('ltStudent').value;
+            const date = document.getElementById('ltDate').value;
+            const reason = document.getElementById('ltReason').value;
+
+            const photoBase64 = await convertFileToBase64(photoFile);
+            const lateBase64 = await convertFileToBase64(lateFile);
+
+            const record = {
+                id: Date.now(),
+                type: 'Tugas Terlambat PAI',
+                className,
+                studentName,
+                details: `Tgl Tugas: ${date} | Alasan: ${reason}`,
+                timestamp: new Date().toLocaleString('id-ID'),
+                fileName: photoFile ? photoFile.name : '',
+                fileData: photoBase64,
+                taskFileName: lateFile ? lateFile.name : '',
+                taskFileData: lateBase64
+            };
+
+            submissions.unshift({
+                id: record.id,
+                type: record.type,
+                className: record.className,
+                studentName: record.studentName,
+                details: record.details + ` | Foto: ${record.fileName} | File: ${record.taskFileName}`,
+                timestamp: record.timestamp
+            });
+
+            localStorage.setItem('student_submissions_pai', JSON.stringify(submissions));
+            await sendToGoogleSheets(record);
+
+            renderHistory();
+            document.getElementById('formLateTask').reset();
+            document.getElementById('ltStudent').innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
+            document.getElementById('ltPhotoName').textContent = "Format: JPG, PNG (Maks 5MB)";
+            document.getElementById('ltFileName').textContent = "Belum ada file dipilih";
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Pengajuan Tugas Terlambat PAI';
+
+            showModal('Barokallah!', 'Absensi, foto, dan tugas PAI berhasil dikirim ke Google Drive & Data Guru.', 'success');
+            switchView('home');
+        }
+
+        function renderHistory() {
+            const listContainer = document.getElementById('historyList');
+            document.getElementById('historyCount').textContent = `${submissions.length} Data`;
+
+            if (submissions.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Belum ada aktivitas pengiriman tugas atau absensi.</p>`;
+                return;
+            }
+
+            listContainer.innerHTML = submissions.slice(0, 5).map(item => `
+                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${item.type.includes('Terlambat') ? 'bg-teal-100 text-teal-800' : 'bg-emerald-100 text-emerald-800'}">${item.type}</span>
+                            <span class="text-xs font-bold text-slate-800">${item.studentName} (${item.className})</span>
+                        </div>
+                        <p class="text-xs text-slate-600">${item.details}</p>
+                    </div>
+                    <span class="text-[10px] text-slate-400 whitespace-nowrap"><i class="fa-regular fa-clock mr-1"></i>${item.timestamp}</span>
+                </div>
+            `).join('');
+        }
+
+        function showModal(title, message, type) {
+            const modal = document.getElementById('customModal');
+            const titleEl = document.getElementById('modalTitle');
+            const msgEl = document.getElementById('modalMessage');
+            const iconEl = document.getElementById('modalIcon');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+
+            if (type === 'success') {
+                iconEl.className = "w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-emerald-100 text-emerald-700";
+                iconEl.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else if (type === 'error') {
+                iconEl.className = "w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-rose-100 text-rose-600";
+                iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            } else {
+                iconEl.className = "w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl bg-emerald-100 text-emerald-700";
+                iconEl.innerHTML = '<i class="fa-solid fa-info"></i>';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
